@@ -22,159 +22,147 @@ import di.unipi.model.tosca.*;
 public class Example {
 
 	public static void main(String[] args) throws AlreadyDefinedException, AlreadyPresentException {
+		//Creation of the required RequirementType element.
+		RequirementType osContainer = new RequirementType("OSContanierRequirementType");
+		
 		//Creation of the required CapabilityType elements.
-		CapabilityType sumSubCapType = new CapabilityType("SumSubCapabilityType");
-		CapabilityType sumSubMulCapType = new CapabilityType(sumSubCapType, "SumSubMulCapabilityType");
-
+		CapabilityType wsRuntimeCapType = new CapabilityType("WebAppRuntimeCapabilityType");
+		CapabilityType webAppRuntimeCapType = new CapabilityType(wsRuntimeCapType, "WSRuntimeCapabilityType");
+		
 		//Creation of the required Property elements.
-		Property author = new Property("Author", String.class);
+		Property hostName = new Property("HostName", String.class);
+		Property host= new Property("Host", String.class);
 		Property version = new Property("Version", String.class);
 		Property release = new Property("Release", String.class);
-		Property developer = new Property("Developer", String.class);
-
-
-		//Creation of the required Parameter elements.
-		//input
-		Parameter a = new Parameter("a", Integer.class);
-		Parameter b = new Parameter("b", Integer.class);
-		//output
-		Parameter sumOut = new Parameter("sum", Integer.class);
-		Parameter subOut = new Parameter("sub", Integer.class);
-		Parameter mulOut = new Parameter("mul", Integer.class);
+		
 
 		//Creation of the required Operation elements.
-		//sum
-		List<Parameter> sumInputs = new ArrayList<Parameter>();
-		sumInputs.add(a);
-		sumInputs.add(b);
-		List<Parameter> sumOutputs = new ArrayList<Parameter>();
-		sumOutputs.add(sumOut);
-		Operation sumOp = new Operation("Sum", sumInputs, sumOutputs);
-		//sub
-		List<Parameter> subInputs = new ArrayList<Parameter>();
-		subInputs.add(a);
-		subInputs.add(b);
-		List<Parameter> subOutputs = new ArrayList<Parameter>();
-		subOutputs.add(subOut);
-		Operation subOp = new Operation("Sub", subInputs, subOutputs);
-		//mul
-		List<Parameter> mulInputs = new ArrayList<Parameter>();
-		mulInputs.add(a);
-		mulInputs.add(b);
-		List<Parameter> mulOutputs = new ArrayList<Parameter>();
-		mulOutputs.add(mulOut);
-		Operation mulOp = new Operation("Sub", mulInputs, mulOutputs);
+		//start
+		Operation start = new Operation("Start", new ArrayList<Parameter>(), new ArrayList<Parameter>());
+		//stop
+		Operation stop = new Operation("Stop", new ArrayList<Parameter>(), new ArrayList<Parameter>());
+		//configure
+		Operation configure = new Operation("Configure", new ArrayList<Parameter>(), new ArrayList<Parameter>());
 
 		//Creation of the required Interface elements.
-		//ops
-		List<Operation> opsList = new ArrayList<Operation>();
-		opsList.add(sumOp);
-		opsList.add(subOp);
-		Interface ops = new Interface("Ops", opsList);
-		//sum
-		List<Operation> sumList = new ArrayList<Operation>();
-		sumList.add(sumOp);
-		Interface sum = new Interface("Sum", sumList);
-		//sub
-		List<Operation> subList = new ArrayList<Operation>();
-		subList.add(subOp);
-		Interface sub = new Interface("Sub", subList);
-		//mul
-		List<Operation> mulList = new ArrayList<Operation>();
-		mulList.add(mulOp);
-		Interface mul = new Interface("Mul", mulList);
+		//lifecycle
+		List<Operation> lifecycleIfOps = new ArrayList<Operation>();
+		lifecycleIfOps.add(start);
+		lifecycleIfOps.add(stop);
+		Interface lifecycleIf = new Interface("Lifecycle", lifecycleIfOps);
+		//start
+		List<Operation> startIfOps = new ArrayList<Operation>();
+		startIfOps.add(start);
+		Interface startIf = new Interface("Start", startIfOps);
+		//stop
+		List<Operation> stopIfOps = new ArrayList<Operation>();
+		stopIfOps.add(stop);
+		Interface stopIf = new Interface("Stop", stopIfOps);
+		//configure
+		List<Operation> configureIfOps = new ArrayList<Operation>();
+		configureIfOps.add(configure);
+		Interface configureIf = new Interface("Configure", configureIfOps);
 
-		//Creation of SummerNodeType
-		NodeType summerNT = new NodeType("SummerNodeType");
+		//Creation of ServerNodeType
+		NodeType serverNodeType = new NodeType("Server");
 
-		summerNT.getCapabilityDefinitions().addDefinition("CalculatorCapability", sumSubCapType);
+		serverNodeType.getRequirementDefinitions().addDefinition("OSContainer", osContainer);
+		
+		serverNodeType.getCapabilityDefinitions().addDefinition("WSRuntime", wsRuntimeCapType);
 
-		summerNT.getPropertiesDefinition().addDefinition("Author", String.class);
-		summerNT.getPropertiesDefinition().addDefinition("Version", String.class);
+		serverNodeType.getPropertiesDefinition().addDefinition("HostName", String.class);
+		serverNodeType.getPropertiesDefinition().addDefinition("Version", String.class);
 
-		summerNT.getInterfaces().add(ops);
+		serverNodeType.getInterfaces().add(lifecycleIf);
 
 		//Creation of the required PolicyType and Policy elements.
 		PolicyType highAvPolType = new PolicyType("HighAvailabilityPolicyType");
-		highAvPolType.setApplicableTo(summerNT);
+		highAvPolType.setApplicableTo(serverNodeType);
 		Policy highAvPol = new Policy("HighAvailabilityPolicy", highAvPolType);
 
 		//Creation of SummerService
-		ServiceTemplate summerST = new ServiceTemplate("SummerService");
+		ServiceTemplate apacheServer = new ServiceTemplate("ApacheServer");
 
-		Capability sumSubCap = new Capability("CalculatorCapability", sumSubCapType);
-		summerST.getBoundaryDefinitions().add(sumSubCap);
+		Requirement osContainerReq = new Requirement("OSContainer", osContainer);
+		apacheServer.getBoundaryDefinitions().add(osContainerReq);
+		
+		Capability wsRuntimeCap = new Capability("WSRuntime", wsRuntimeCapType);
+		apacheServer.getBoundaryDefinitions().add(wsRuntimeCap);
 
-		summerST.getBoundaryDefinitions().add(highAvPol);
+		apacheServer.getBoundaryDefinitions().add(highAvPol);
 
-		summerST.getBoundaryDefinitions().add(author);
-		summerST.getBoundaryDefinitions().add(version);
+		apacheServer.getBoundaryDefinitions().add(hostName);
+		apacheServer.getBoundaryDefinitions().add(version);
 
-		summerST.getBoundaryDefinitions().add(ops);
+		apacheServer.getBoundaryDefinitions().add(lifecycleIf);
 
 
 		//Creation of CalculatorService
-		ServiceTemplate calculatorST = new ServiceTemplate("CalculatorService");
+		ServiceTemplate paasServer = new ServiceTemplate("PaaS_Server");
 
-		Capability sumSubMulCap = new Capability("CalculatorCapability", sumSubMulCapType);
-		calculatorST.getBoundaryDefinitions().add(sumSubMulCap);
+		paasServer.getBoundaryDefinitions().add(osContainerReq);
+		
+		Capability webAppRuntimeCap = new Capability("WSRuntime", webAppRuntimeCapType);
+		paasServer.getBoundaryDefinitions().add(webAppRuntimeCap);
 
-		calculatorST.getBoundaryDefinitions().add(highAvPol);
+		paasServer.getBoundaryDefinitions().add(highAvPol);
 
-		calculatorST.getBoundaryDefinitions().add(author);
-		calculatorST.getBoundaryDefinitions().add(version);
-		calculatorST.getBoundaryDefinitions().add(release);
+		paasServer.getBoundaryDefinitions().add(hostName);
+		paasServer.getBoundaryDefinitions().add(version);
+		paasServer.getBoundaryDefinitions().add(release);
 
-		calculatorST.getBoundaryDefinitions().add(sum);
-		calculatorST.getBoundaryDefinitions().add(sub);
-		calculatorST.getBoundaryDefinitions().add(mul);
+		paasServer.getBoundaryDefinitions().add(startIf);
+		paasServer.getBoundaryDefinitions().add(stopIf);
+		paasServer.getBoundaryDefinitions().add(configureIf);
 
 		//Creation of CalculatorServiceV1.1
-		ServiceTemplate calculatorSTV11 = new ServiceTemplate("CalculatorService2");
+		ServiceTemplate paasServer2 = new ServiceTemplate("PaaS_Server_2");
 
-		calculatorSTV11.getBoundaryDefinitions().add(sumSubMulCap);
+		paasServer2.getBoundaryDefinitions().add(osContainerReq);
+		
+		paasServer2.getBoundaryDefinitions().add(webAppRuntimeCap);
 
-		calculatorSTV11.getBoundaryDefinitions().add(highAvPol);
+		paasServer2.getBoundaryDefinitions().add(highAvPol);
 
-		calculatorSTV11.getBoundaryDefinitions().add(developer);
-		calculatorSTV11.getBoundaryDefinitions().add(version);
-		calculatorSTV11.getBoundaryDefinitions().add(release);
+		paasServer2.getBoundaryDefinitions().add(host);
+		paasServer2.getBoundaryDefinitions().add(version);
+		paasServer2.getBoundaryDefinitions().add(release);
 
-		calculatorSTV11.getBoundaryDefinitions().add(sum);
-		calculatorSTV11.getBoundaryDefinitions().add(sub);
-		calculatorSTV11.getBoundaryDefinitions().add(mul);
+		paasServer2.getBoundaryDefinitions().add(startIf);
+		paasServer2.getBoundaryDefinitions().add(stopIf);
+		paasServer2.getBoundaryDefinitions().add(configureIf);
 
 
 		//EXACT: SummerNodeType vs. SummerService
-		{ ExactMatchmaker summerNodeTypeVSSummerService = new ExactMatchmaker(summerNT, summerST);
+		{ ExactMatchmaker summerNodeTypeVSSummerService = new ExactMatchmaker(serverNodeType, apacheServer);
 		if(summerNodeTypeVSSummerService.match())
-			System.out.println(summerST.getName() + " exactly matches " + summerNT.getName());
+			System.out.println(apacheServer.getName() + " exactly matches " + serverNodeType.getName());
 		else
-			System.out.println(summerST.getName() + " does not exactly match " + summerNT.getName());
+			System.out.println(apacheServer.getName() + " does not exactly match " + serverNodeType.getName());
 		}
 
 		//EXACT: SummerNodeType vs. CalculatorService
-		{ ExactMatchmaker summerNodeTypeVSCalculatorService = new ExactMatchmaker(summerNT, calculatorST);
+		{ ExactMatchmaker summerNodeTypeVSCalculatorService = new ExactMatchmaker(serverNodeType, paasServer);
 		if(summerNodeTypeVSCalculatorService.match())
-			System.out.println(calculatorST.getName() + " exactly matches " + summerNT.getName());
+			System.out.println(paasServer.getName() + " exactly matches " + serverNodeType.getName());
 		else
-			System.out.println(calculatorST.getName() + " does not exactly match " + summerNT.getName());
+			System.out.println(paasServer.getName() + " does not exactly match " + serverNodeType.getName());
 		}
 
 		//PLUG-IN: SummerNodeType vs. CalculatorService
-		{ PlugInMatchmaker summerNodeTypeVSCalculatorService = new PlugInMatchmaker(summerNT, calculatorST);
+		{ PlugInMatchmaker summerNodeTypeVSCalculatorService = new PlugInMatchmaker(serverNodeType, paasServer);
 		if(summerNodeTypeVSCalculatorService.match())
-			System.out.println(calculatorST.getName() + " plug-in matches " + summerNT.getName());
+			System.out.println(paasServer.getName() + " plug-in matches " + serverNodeType.getName());
 		else
-			System.out.println(calculatorST.getName() + " does not plug-in match " + summerNT.getName());
+			System.out.println(paasServer.getName() + " does not plug-in match " + serverNodeType.getName());
 		}
 
 		//PLUG-IN: SummerNodeType vs. CalculatorServiceV1.1
-		{ PlugInMatchmaker summerNodeTypeVSCalculatorServiceV11 = new PlugInMatchmaker(summerNT, calculatorSTV11);
+		{ PlugInMatchmaker summerNodeTypeVSCalculatorServiceV11 = new PlugInMatchmaker(serverNodeType, paasServer2);
 		if(summerNodeTypeVSCalculatorServiceV11.match())
-			System.out.println(calculatorSTV11.getName() + " plug-in matches " + summerNT.getName());
+			System.out.println(paasServer2.getName() + " plug-in matches " + serverNodeType.getName());
 		else
-			System.out.println(calculatorSTV11.getName() + " does not plug-in match " + summerNT.getName());
+			System.out.println(paasServer2.getName() + " does not plug-in match " + serverNodeType.getName());
 		}
 	}
 }
