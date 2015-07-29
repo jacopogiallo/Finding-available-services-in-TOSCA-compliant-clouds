@@ -98,7 +98,7 @@ public class Example {
 
 
 		//Creation of CalculatorService
-		ServiceTemplate paasServer = new ServiceTemplate("PaaS_Server");
+		ServiceTemplate paasServer = new ServiceTemplate("PaaSServer");
 
 		paasServer.getBoundaryDefinitions().add(osContainerReq);
 		
@@ -116,7 +116,7 @@ public class Example {
 		paasServer.getBoundaryDefinitions().add(configureIf);
 
 		//Creation of CalculatorServiceV1.1
-		ServiceTemplate paasServer2 = new ServiceTemplate("PaaS_Server_2");
+		ServiceTemplate paasServer2 = new ServiceTemplate("PaaSServer2");
 
 		paasServer2.getBoundaryDefinitions().add(osContainerReq);
 		
@@ -134,35 +134,35 @@ public class Example {
 
 
 		//EXACT: SummerNodeType vs. SummerService
-		{ ExactMatchmaker summerNodeTypeVSSummerService = new ExactMatchmaker(serverNodeType, apacheServer);
-		if(summerNodeTypeVSSummerService.match())
-			System.out.println(apacheServer.getName() + " exactly matches " + serverNodeType.getName());
+		{ ExactMatchmaker apacheServerExactMatchesServer = new ExactMatchmaker(serverNodeType, apacheServer);
+		if(apacheServerExactMatchesServer.match())
+			System.out.println(apacheServer.getName() + "\t exactly matches \t\t" + serverNodeType.getName());
 		else
-			System.out.println(apacheServer.getName() + " does not exactly match " + serverNodeType.getName());
+			System.err.println(apacheServer.getName() + "\t does not exactly match \t" + serverNodeType.getName());
 		}
 
 		//EXACT: SummerNodeType vs. CalculatorService
-		{ ExactMatchmaker summerNodeTypeVSCalculatorService = new ExactMatchmaker(serverNodeType, paasServer);
-		if(summerNodeTypeVSCalculatorService.match())
-			System.out.println(paasServer.getName() + " exactly matches " + serverNodeType.getName());
+		{ ExactMatchmaker paasServerExactMatchesServer = new ExactMatchmaker(serverNodeType, paasServer);
+		if(paasServerExactMatchesServer.match())
+			System.out.println(paasServer.getName() + "\t exactly matches \t\t" + serverNodeType.getName());
 		else
-			System.out.println(paasServer.getName() + " does not exactly match " + serverNodeType.getName());
+			System.err.println(paasServer.getName() + "\t does not exactly match \t" + serverNodeType.getName());
 		}
 
 		//PLUG-IN: SummerNodeType vs. CalculatorService
-		{ PlugInMatchmaker summerNodeTypeVSCalculatorService = new PlugInMatchmaker(serverNodeType, paasServer);
-		if(summerNodeTypeVSCalculatorService.match())
-			System.out.println(paasServer.getName() + " plug-in matches " + serverNodeType.getName());
+		{ PlugInMatchmaker paasServerPlugInMatchesServer = new PlugInMatchmaker(serverNodeType, paasServer);
+		if(paasServerPlugInMatchesServer.match())
+			System.out.println(paasServer.getName() + "\t plug-in matches \t\t" + serverNodeType.getName());
 		else
-			System.out.println(paasServer.getName() + " does not plug-in match " + serverNodeType.getName());
+			System.err.println(paasServer.getName() + "\t does not plug-in match \t" + serverNodeType.getName());
 		}
 
 		//PLUG-IN: SummerNodeType vs. CalculatorServiceV1.1
-		{ PlugInMatchmaker summerNodeTypeVSCalculatorServiceV11 = new PlugInMatchmaker(serverNodeType, paasServer2);
-		if(summerNodeTypeVSCalculatorServiceV11.match())
-			System.out.println(paasServer2.getName() + " plug-in matches " + serverNodeType.getName());
+		{ PlugInMatchmaker paasServer2PlugInMatchesServer = new PlugInMatchmaker(serverNodeType, paasServer2);
+		if(paasServer2PlugInMatchesServer.match())
+			System.out.println(paasServer2.getName() + "\t plug-in matches \t\t" + serverNodeType.getName());
 		else
-			System.out.println(paasServer2.getName() + " does not plug-in match " + serverNodeType.getName());
+			System.err.println(paasServer2.getName() + "\t does not plug-in match \t" + serverNodeType.getName());
 		}
 	}
 }
