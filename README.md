@@ -3,4 +3,4 @@ This repository contains (the Eclipse project for) the Proof-of-Concept implemen
 <br />
 A. Brogi, J. Soldani. <br />
 Finding available services in TOSCA-compliant clouds. <br />
-[Draft submitted for publication] <br />
+[To appear in Science of Computer Programming - Special Issue for FOCLASA 13] <br />
