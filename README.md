@@ -1,4 +1,4 @@
-# TOSCA-MART
+# Finding available services in TOSCA-compliant clouds
 This repository contains the source code of a Java implementation of the TOSCA-based matchmaking and adaptation approach, which has been presented in 
 > _A. Brogi, J. Soldani <br>
 > **[Finding available services in TOSCA-compliant clouds.](http://www.sciencedirect.com/science/article/pii/S0167642315002634)** <br>
